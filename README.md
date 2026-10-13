@@ -1,4 +1,3 @@
-[README (2).md](https://github.com/user-attachments/files/33390546/README.2.md)
 # NiraVed
 
 **Know Your Care Before You Pay.**
