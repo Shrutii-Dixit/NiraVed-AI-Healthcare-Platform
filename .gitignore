@@ -206,6 +206,36 @@ tempCodeRunnerFile.py
 # Ruff stuff:
 .ruff_cache/
 
+# Local secrets: keep .env.example tracked if one is added later.
+.env.*
+!.env.example
+
+# Local datasets and generated experiment outputs (document sources in data/README.md).
+data/raw/**
+!data/raw/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+*.parquet
+*.feather
+*.pkl
+*.pickle
+
+# Trained model artifacts and local caches.
+models/**
+!models/.gitkeep
+*.joblib
+*.onnx
+*.h5
+*.pt
+*.pth
+*.model
+.cache/
+
+# Local editor settings and temporary files.
+.vscode/
+*.tmp
+*.temp
+
 # PyPI configuration file
 .pypirc
 

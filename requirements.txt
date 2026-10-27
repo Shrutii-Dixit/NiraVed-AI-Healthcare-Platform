@@ -1,0 +1,11 @@
+# Proposed root Python stack for future tabular ML and API work.
+# Versions are bounded proposals, not a verified or locked environment.
+numpy>=1.26,<3
+pandas>=2.1,<4
+scikit-learn>=1.4,<2
+fastapi>=0.110,<1
+uvicorn[standard]>=0.27,<1
+pydantic>=2.6,<3
+matplotlib>=3.8,<4
+shap>=0.45,<1
+pytest>=8,<9
