@@ -11,119 +11,224 @@
 
 ## Contents
 
-- [Overview](#overview)
-- [Problem and research objective](#problem-and-research-objective)
-- [Scope and intended use](#scope-and-intended-use)
-- [Features and workflow](#features-and-workflow)
-- [Architecture](#architecture)
+- [Executive summary](#executive-summary)
+- [Problem statement](#problem-statement)
+- [Proposed solution](#proposed-solution)
+- [Scope and selected health domains](#scope-and-selected-health-domains)
+- [Core features and workflow](#core-features-and-workflow)
+- [Proposed architecture](#proposed-architecture)
 - [Independent ML pipelines](#independent-ml-pipelines)
-- [Datasets and methodology](#datasets-and-methodology)
-- [Explainability](#explainability)
-- [Technology](#technology)
+- [Dataset strategy](#dataset-strategy)
+- [Model training and evaluation](#model-training-and-evaluation)
+- [Explainable AI](#explainable-ai)
+- [Technology stack](#technology-stack)
 - [Repository structure](#repository-structure)
-- [Setup and current execution stage](#setup-and-current-execution-stage)
+- [Setup and current status](#setup-and-current-status)
 - [Validation strategy](#validation-strategy)
-- [Responsible research, privacy, and limitations](#responsible-research-privacy-and-limitations)
+- [Responsible AI, privacy, and limitations](#responsible-ai-privacy-and-limitations)
+- [Team and work division](#team-and-work-division)
 - [Roadmap](#roadmap)
 - [Future scope](#future-scope)
 - [Research references](#research-references)
-- [Team and contribution](#team-and-contribution)
 - [License](#license)
 
-## Overview
+## Executive summary
 
-NiraVed is a modular, explainable AI/ML healthcare research prototype for exploring health risks from structured inputs. The B.Tech CSE mini project is in **planning and design**. The initial study is intentionally limited to two separately developed classification modules: heart disease and stroke risk. No model, API, working interface, deployment, or measured performance is currently claimed.
-
-## Problem and research objective
-
-People may face uncertainty when deciding whether to seek care, while a broad system that predicts many diseases would be difficult to evaluate credibly in a student project. NiraVed will investigate whether carefully evaluated tabular ML pipelines can classify dataset-defined heart disease and stroke-risk outcomes, and present their outputs and limitations in understandable language.
-
-The research objective is to compare suitable baselines and candidate models for each target, evaluate their errors with appropriate metrics, and study whether explainability methods help communicate model behavior. Findings will be limited to the selected datasets and experimental design; they will not establish clinical effectiveness.
-
-## Scope and intended use
+NiraVed is a modular, explainable AI/ML healthcare research prototype for exploring health risks from structured inputs. The first version is deliberately limited to two independently developed classification modules:
 
 | Module | Research target | Input |
 |---|---|---|
-| Heart disease | Target label defined by the verified selected dataset | Structured clinical and demographic features |
-| Stroke risk | Stroke-risk classification defined by the selected dataset | Structured demographic, lifestyle, and clinical features |
+| Heart disease | The heart-disease label defined by the verified selected dataset | Structured clinical and demographic features |
+| Stroke risk | Stroke-risk classification defined by the verified selected dataset | Structured demographic, lifestyle, and clinical features |
 
-The proposed audience is the student research team, faculty reviewers, and readers evaluating the methods. If eventually built, the interface is intended for educational exploration only. The stroke module is **not** a brain-tumour detector, MRI model, or universal brain-disease detector. See [project requirements](docs/project-requirements.md) and [user stories](docs/user-stories.md).
+Each module will follow literature review, dataset verification, leakage-safe preprocessing, baseline comparison, model evaluation, calibration checks, and explainability review before any application integration. No model metrics, deployment, working interface, or clinical effectiveness are claimed at this planning stage.
 
-## Features and workflow
+## Problem statement
 
-**Implemented:** repository planning and design documentation only. No predictive software is confirmed.
+People may face uncertainty when deciding whether to seek care. A system that predicts every disease would be too broad to evaluate credibly in a student project. NiraVed therefore investigates a bounded question:
 
-**Planned core work:** independent heart and stroke-risk experiments; data validation; model comparison; explainability where suitable; and a proposed React interface with a FastAPI service after models are evaluated.
+> Can carefully evaluated tabular ML pipelines classify dataset-defined heart-disease and stroke-risk outcomes from structured features and communicate their limitations clearly?
 
-**Future scope:** cost estimates, hospital recommendations, insurance guidance, medical-report analysis, multilingual support, and additional disease modules. These are not current features.
+The project is about reproducible research and responsible communication, not diagnosis or replacement of a healthcare professional.
 
-Proposed user flow: select a module → enter structured inputs → validate inputs → run the relevant independent model → present the estimated class/category and an explanation → show limitations and appropriate next steps. The workflow remains proposed until implemented and tested.
+## Proposed solution
 
-## Architecture
+The planned user experience is:
 
-The following is a **proposed** architecture, not a description of deployed components.
+1. Select the heart or stroke-risk module.
+2. Enter the structured features required by that module.
+3. Validate the inputs before inference.
+4. Run only the selected module's independent pipeline.
+5. Present an estimated class or risk category with important model features.
+6. Show uncertainty, limitations, and appropriate next-step guidance.
+
+Medical-report OCR, treatment-cost estimates, hospital recommendations, insurance guidance, and additional disease modules are future scope, not current features.
+
+## Scope and selected health domains
+
+### Heart disease
+
+The heart module will predict only the target label defined by its verified dataset. It will not be described as a detector for every cardiovascular disease.
+
+### Stroke risk
+
+The second module will address stroke-risk classification from structured tabular data. It is not a brain-tumour detector, MRI model, or universal brain-disease detector. The final feature list and label definition will be documented after dataset selection.
+
+The two-domain scope supports independent evaluation, shared tooling where appropriate, and a manageable research contribution for a four-person B.Tech mini project.
+
+## Core features and workflow
+
+### Planned MVP
+
+| Feature | Status |
+|---|---|
+| Independent heart-disease classification pipeline | Planned |
+| Independent stroke-risk classification pipeline | Planned |
+| Baseline and candidate model comparison | Planned |
+| Leakage-safe preprocessing and imbalance handling | Planned |
+| Explainability using SHAP or a justified alternative | Planned |
+| Input validation and responsible-use messaging | Planned |
+| Simple interface and API after model readiness | Planned |
+
+### Proposed workflow
+
+```mermaid
+flowchart TD
+    A([User]) --> B{Select health module}
+    B -->|Heart| C1[Heart feature form]
+    B -->|Stroke risk| C2[Stroke-risk feature form]
+    C1 --> D[Input validation and preprocessing]
+    C2 --> D
+    D --> E{Selected independent model}
+    E -->|Heart| F1[Heart pipeline]
+    E -->|Stroke risk| F2[Stroke pipeline]
+    F1 --> G[Estimated class or risk category]
+    F2 --> G
+    G --> H[Important features and explanation]
+    H --> I[Limitations and appropriate next steps]
+```
+
+The workflow remains proposed until the corresponding software is implemented and tested.
+
+## Proposed architecture
 
 ```mermaid
 flowchart LR
-    U[User] --> UI[Proposed React interface]
-    UI --> API[Proposed FastAPI service]
-    API --> V[Input validation]
-    V --> H[Independent heart pipeline]
-    V --> S[Independent stroke-risk pipeline]
-    H --> R[Prediction and explanation response]
-    S --> R
-    R --> UI
-    X[Shared preprocessing and XAI utilities] -.-> H
-    X -.-> S
-    D[(Authorized datasets)] --> T[Separate training and evaluation]
-    T --> H
-    T --> S
+    FE["Proposed React interface"] --> API["Proposed FastAPI service"]
+    API --> VAL["Input validation"]
+    VAL --> HP["Independent heart pipeline"]
+    VAL --> SP["Independent stroke-risk pipeline"]
+    HP --> RESP["Prediction and explanation response"]
+    SP --> RESP
+    RESP --> FE
+    DATA[(Authorized datasets)] --> TRAIN["Separate training and evaluation"]
+    TRAIN --> HP
+    TRAIN --> SP
 ```
 
-The service is intended to use validated schemas and stateless prediction requests. Training and evaluation remain separate from inference. No database is currently proposed; avoiding storage of user inputs is the default design. Further detail and design limitations are in [system design](docs/system-design.md).
+The application is intended to use validated schemas and stateless prediction requests. No database is required for the MVP; avoiding storage of user inputs is the default design. The architecture is documented in [docs/system-design.md](docs/system-design.md).
 
 ## Independent ML pipelines
 
-Each module will independently follow: dataset and label verification → data understanding → preprocessing in leakage-safe pipelines → train/validation/test strategy → baseline → candidate comparison and tuning → evaluation and calibration checks → explainability review → documented experiment. The heart pipeline will predict only the heart dataset's defined target. The stroke pipeline will address class imbalance and will not be described as a general brain classifier.
+Each module will independently follow:
 
-## Datasets and methodology
+1. Dataset and label verification.
+2. Data understanding and exploratory analysis.
+3. Leakage-safe preprocessing.
+4. Train/validation/test strategy.
+5. Majority-class and simple model baselines.
+6. Candidate comparison and tuning.
+7. Evaluation and calibration checks.
+8. Explainability review.
+9. A reproducible experiment report.
 
-No datasets have been finalized. Candidate sources mentioned during planning are examples only. Before use, record the original source, provenance, licence/terms, collection method, target definition, feature dictionary, population, and known limitations. Obtain data only from authorized sources. Do not commit patient records, restricted datasets, or large data files. Keep raw data immutable and document reproducible transformations; see [data guidance](data/README.md).
+Heart and stroke experiments, thresholds, reports, and model artifacts must remain separate. A weak result in one module must not be hidden by results from the other module.
 
-Use stratified splitting where appropriate and reserve a final test set. Fit imputers, encoders, scalers, feature selection, and any resampling only within training folds. Compare a simple baseline (including a majority-class baseline) with suitable models. Select thresholds on validation data, never on the final test set. Heart and stroke experiments, thresholds, reports, and model artifacts must remain separate.
+### Heart pipeline
 
-Report precision, recall/sensitivity, specificity, F1-score, confusion matrix, and ROC-AUC where appropriate. For imbalanced stroke data, also report precision-recall curves/area and class counts; do not rely on accuracy alone. Include uncertainty or fold variation, calibration checks such as Brier score when scores are interpreted probabilistically, and subgroup analyses when data supports them. No performance figures are claimed in advance.
+Candidate work includes missing-value review, categorical encoding, scaling where required, baseline comparison, model selection, and evaluation using precision, recall/sensitivity, specificity, F1-score, confusion matrix, and ROC-AUC where appropriate.
 
-## Explainability
+### Stroke-risk pipeline
 
-SHAP is a proposed method when appropriate to the selected models; coefficients or permutation importance may be more suitable for some comparisons. Document the method and its limitations. Feature contributions describe model behavior, not causes of disease, and an explanation does not make a weak or biased model trustworthy. See [research documentation](docs/research/README.md).
+Candidate work includes missing-value handling, categorical encoding, stratified splitting, and class-imbalance safeguards. Class weights or resampling such as SMOTE may be compared, but resampling must occur only inside training folds. Precision, recall, F1-score, precision-recall curves/area, ROC-AUC, and confusion matrices are more informative than accuracy alone for an imbalanced target.
 
-## Technology
+## Dataset strategy
 
-The existing design proposes **Python** for ML and the backend, **pandas**, **NumPy**, and **scikit-learn** for tabular workflows, **FastAPI/Pydantic** for a future API, and **React** for a future interface. SHAP and matplotlib are proposed for explainability and plots. The UI framework and interfaces remain proposed. The root [requirements.txt](requirements.txt) lists a minimal Python proposal; no packages have been installed or compatibility verified as part of this setup.
+No dataset has been finalized. Before use, the team will record:
+
+- Original source, provenance, licence or terms, and collection method.
+- Target definition, feature dictionary, population, and sample counts.
+- Missing values, duplicates, possible leakage, and known limitations.
+- The exact transformations required for reproducibility.
+
+Raw data must remain immutable. Patient records, restricted datasets, large data files, and secrets must not be committed. Candidate datasets mentioned during planning are examples only until verified and documented in [data/README.md](data/README.md). The heart and stroke datasets will not be mixed.
+
+## Model training and evaluation
+
+The evaluation plan includes:
+
+| Area | Planned approach |
+|---|---|
+| Splitting | Hold out a final test set and use stratified cross-validation or a validation split for selection and tuning |
+| Leakage prevention | Fit imputers, encoders, scalers, feature selection, and resampling only on training folds inside pipelines |
+| Baselines | Majority-class predictor and a simple model such as logistic regression |
+| Metrics | Accuracy, precision, recall/sensitivity, specificity, F1-score, ROC-AUC, precision-recall area where appropriate, and confusion matrix |
+| Thresholds | Select on validation data and document the recall/precision trade-off; do not tune on the final test set |
+| Calibration | Review calibration curves and Brier score before describing scores as probabilities |
+| Reporting | Include fold variation, class counts, limitations, and subgroup analysis where the data supports it |
+
+A high accuracy from one split is not sufficient evidence. Dataset performance does not establish generalization to another population or clinical validity.
+
+## Explainable AI
+
+The planned result may include:
+
+- An estimated class or carefully worded risk category.
+- Features that most influenced the model output.
+- A concise plain-language explanation.
+- Uncertainty and model limitations.
+
+SHAP is planned where suitable. Logistic-regression coefficients or permutation importance may be more appropriate for some comparisons. Feature importance describes model behavior, not causes of disease. Explanations can be unstable with correlated features or small datasets and must not make a weak or biased model appear trustworthy.
+
+## Technology stack
+
+| Layer | Planned technology |
+|---|---|
+| Language | Python |
+| Data and ML | pandas, NumPy, scikit-learn |
+| Backend | FastAPI and Pydantic |
+| Frontend | React |
+| Imbalance handling | imbalanced-learn where justified |
+| Explainability | SHAP or a documented alternative |
+| Visualization | matplotlib and seaborn |
+| Model persistence | joblib |
+| Testing | pytest |
+| Database | None for the MVP |
+
+These are proposed dependencies. They are listed in [requirements.txt](requirements.txt), but the project does not yet claim a verified runtime environment.
 
 ## Repository structure
+
+The current repository is a planning and package scaffold:
 
 ```text
 .
 ├── README.md
 ├── LICENSE
-├── .gitignore
 ├── requirements.txt
 ├── CONTRIBUTING.md
 ├── data/
 │   ├── README.md
 │   ├── raw/.gitkeep
 │   └── processed/.gitkeep
+├── models/.gitkeep
 ├── notebooks/README.md
 ├── src/niraved/
 │   ├── __init__.py
-│   ├── common/__init__.py
-│   ├── heart/__init__.py
-│   ├── stroke/__init__.py
-│   └── explainability/__init__.py
-├── app/README.md
-├── models/.gitkeep
+│   ├── common/
+│   ├── explainability/
+│   ├── heart/
+│   └── stroke/
 ├── tests/README.md
 ├── docs/
 │   ├── project-requirements.md
@@ -132,71 +237,88 @@ The existing design proposes **Python** for ML and the backend, **pandas**, **Nu
 │   ├── team-work-division.md
 │   ├── implementation-roadmap.md
 │   └── research/
-│       ├── README.md
-│       └── literature-review-template.md
 └── .github/
     ├── PULL_REQUEST_TEMPLATE.md
     └── ISSUE_TEMPLATE/task.md
 ```
 
-Package initializer files establish Python package locations only; they contain no model implementation. Large datasets, trained models, caches, and generated outputs are excluded from Git.
+The package initializer files establish package locations only; they do not contain training or inference implementations. Large datasets, trained models, caches, and generated outputs are excluded from Git.
 
-## Setup and current execution stage
+## Setup and current status
 
-This repository currently contains planning materials and package placeholders, not an executable application or training pipeline. Python dependencies are proposed and not verified. To prepare a local environment when beginning implementation:
+The repository currently contains planning documentation and package placeholders, not an executable application or training pipeline.
 
 ```bash
 python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-There is currently no application command or model to run. Do not obtain or use a dataset until its source and terms have been reviewed and recorded in `data/README.md`.
+There is currently no application command or trained model to run. Do not obtain or use a dataset until its source and terms have been reviewed and recorded.
 
 ## Validation strategy
 
-Planned checks include unit tests for preprocessing and input validation; leakage checks; reproducibility checks; module-specific evaluation tests; API contract tests if the service is built; and usability review of disclaimers and explanations. Tests and application behavior are not yet implemented. See [tests/README.md](tests/README.md) and the [roadmap](docs/implementation-roadmap.md).
+Planned checks include preprocessing and input-validation unit tests, leakage checks, reproducibility checks, module-specific evaluation tests, API contract tests if the service is built, and a usability review of safety messaging. See [tests/README.md](tests/README.md) and [docs/implementation-roadmap.md](docs/implementation-roadmap.md).
 
-## Responsible research, privacy, and limitations
+## Responsible AI, privacy, and limitations
 
-NiraVed is an educational research prototype, **not a medical device or diagnostic service**. Outputs must never replace professional assessment or be framed as guaranteed clinical outcomes. A low estimated risk must not be used to rule out illness; urgent symptoms require prompt professional care regardless of any model output.
+NiraVed is an educational research prototype, not a medical diagnostic service. A low estimated risk must never be used to rule out a serious condition, and urgent symptoms require prompt professional care regardless of model output.
 
-Public datasets may be small, old, imbalanced, biased, or unrepresentative of intended users. Dataset performance does not establish generalization or clinical validity. Do not collect or store identifiable health information for this project without a justified, approved design and appropriate safeguards. Minimize inputs, avoid logging health data, protect secrets, and document data handling. No regulatory compliance or clinical validation is claimed.
+Public datasets may be small, old, imbalanced, biased, or unrepresentative. Dataset performance does not establish clinical validity. The project should avoid collecting or storing identifiable health information, minimize inputs, avoid logging health data, protect secrets, and document data handling. No regulatory compliance or clinical validation is claimed.
+
+## Team and work division
+
+The team has four members. Names can be added after confirmation; the role allocation below assigns one member to model training and distributes the remaining responsibilities across the other three members.
+
+| Team member | Primary responsibility | Work division |
+|---|---|---|
+| Member 1 | Model training lead | Build and train both independent heart and stroke-risk pipelines; implement preprocessing, baselines, candidate models, tuning, evaluation, and model-artifact documentation. |
+| Member 2 | Research and data lead | Conduct literature review; verify dataset provenance, licences, labels, and data dictionaries; document data limitations and maintain research sources. |
+| Member 3 | Explainability, evaluation, and testing lead | Review SHAP and alternative explanation methods; define evaluation/reporting conventions with Member 1; create tests, review leakage and calibration evidence, and check responsible-use wording. |
+| Member 4 | Application and integration lead | Define proposed input/output contracts; prepare the FastAPI and React integration plan; maintain repository workflow, integration checks, and final presentation materials. |
+
+All members share requirements review, peer review, documentation, testing, privacy review, and final presentation. Member 1 must not claim model performance until the data and evaluation evidence have been reviewed by Members 2 and 3. Member 4 integrates models only after their feature schemas and artifacts are documented.
+
+The provisional detailed allocation is tracked in [docs/team-work-division.md](docs/team-work-division.md) and should be updated with real names and approved assignments before implementation begins.
 
 ## Roadmap
 
-All work below is planned; there is no confirmed implementation beyond project scoping and documentation.
+| Phase | Work | Status |
+|---|---|---|
+| 0. Scope | Confirm targets, requirements, faculty decisions, and team allocation | In progress / approval pending |
+| 1. Research and data | Review literature and verify datasets, labels, and terms | Planned |
+| 2. Model training | Build and evaluate independent heart and stroke-risk pipelines | Planned |
+| 3. Explainability and testing | Review explanations, leakage, calibration, safety, and reproducibility | Planned |
+| 4. Application | Implement proposed API and interface after model readiness | Planned |
+| 5. Reporting | Prepare the final report and presentation using recorded evidence | Planned |
 
-| Milestone | Status |
-|---|---|
-| Confirm scope and requirements with faculty/team | In progress / approval pending |
-| Review literature and verify candidate datasets and terms | Planned |
-| Build and evaluate heart pipeline independently | Planned |
-| Build and evaluate stroke pipeline with imbalance safeguards | Planned |
-| Review explanations, limitations, and reproducibility | Planned |
-| Integrate proposed API and interface after model readiness | Planned |
-| Validate, document, and prepare final report | Planned |
-
-See the [detailed roadmap](docs/implementation-roadmap.md) for proposed milestones and evidence tracking.
+Update a status only when its supporting evidence exists. No dataset metrics, deployment URL, screenshot, or test result is claimed in this README.
 
 ## Future scope
 
-Later work may examine medical-report analysis, cost estimation, hospital recommendations, insurance guidance, regional languages, external availability integrations, and additional prediction modules. These require separate data, evaluation, and safety decisions and are not part of the initial scope.
+Future work may examine:
+
+- Medical-report and prescription OCR.
+- Treatment-cost estimation.
+- Hospital recommendations.
+- Insurance claim and policy guidance.
+- Multilingual support.
+- Ambulance and doctor-availability integrations.
+- Additional prediction modules.
+- Independent datasets and clinical collaboration.
+
+Each addition requires separate data, evaluation, privacy, and safety decisions.
 
 ## Research references
 
-These methodological references are starting points, not NiraVed findings. No domain papers or dataset citations are treated as verified project evidence at this stage.
+These are methodological starting points, not NiraVed findings. Verify citations against authoritative sources before adding them to the formal report:
 
 - Pedregosa, F. et al. (2011). [Scikit-learn: Machine Learning in Python](https://jmlr.org/papers/v12/pedregosa11a.html). *Journal of Machine Learning Research*, 12(85), 2825–2830.
 - Lundberg, S. M. and Lee, S.-I. (2017). [A Unified Approach to Interpreting Model Predictions](https://proceedings.neurips.cc/paper_files/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html). *Advances in Neural Information Processing Systems 30*.
 - Saito, T. and Rehmsmeier, M. (2015). [The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets](https://doi.org/10.1371/journal.pone.0118432). *PLOS ONE*, 10(3), e0118432.
 
-Verify citations against their original publication or an authoritative record when adding them to the formal review. Use the [literature review template](docs/research/literature-review-template.md), and do not report a paper's conclusion as a NiraVed result.
-
-## Team and contribution
-
-The provisional four-person allocation is in [team-work-division.md](docs/team-work-division.md). All members are expected to contribute to research, documentation, testing, and presentation. Follow [CONTRIBUTING.md](CONTRIBUTING.md) and use the repository's issue and pull-request templates. The current license is MIT; see [LICENSE](LICENSE).
+Use the [literature review template](docs/research/literature-review-template.md) for additional sources. Do not report a paper's conclusion as a NiraVed result.
 
 ## License
 
