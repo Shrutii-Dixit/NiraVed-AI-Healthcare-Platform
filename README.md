@@ -9,6 +9,13 @@
 
 > **Educational research prototype only. NiraVed is not a medical device and does not diagnose, prevent, or treat disease.**
 
+## Live Demo
+
+- Frontend: https://niraved-frontend.onrender.com
+- Backend API docs: https://niraved-backend.onrender.com/docs
+
+> Note: free tier sleeps after 15 min inactivity; first request may take ~50s.
+
 ## Contents
 
 - [Executive summary](#executive-summary)
