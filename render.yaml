@@ -1,13 +1,13 @@
 services:
   - type: web
     name: niraved-backend
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /
   - type: web
     name: niraved-frontend
-    env: static
+    runtime: static
     buildCommand: ""
     staticPublishPath: ./frontend
     plan: free
