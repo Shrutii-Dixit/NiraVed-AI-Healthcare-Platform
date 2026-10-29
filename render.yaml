@@ -10,4 +10,3 @@ services:
     runtime: static
     buildCommand: ""
     staticPublishPath: ./frontend
-    plan: free
