@@ -30,7 +30,7 @@
 <footer>NiraVed — B.Tech mini project · MIT License</footer>
 <script src="i18n.js"></script>
 <script>
-const API="http://127.0.0.1:8000";
+const API="https://niraved-backend.onrender.com";
 let features=[];
 async function init(){
   const r=await fetch(API+"/meta/cad"); const d=await r.json(); features=d.features;
